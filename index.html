@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Fund BitShovel App Wallet</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+  <link href="css/main.css" media="all" rel="stylesheet" />
+</head>
+<body>
+
+<header class='navbar navbar-default navbar-fixed-top'>
+    <nav class='container' role='navigation'>
+      <div class='navbar-header'>
+        <a href='index.html' class='navbar-brand'>BitShovel - Kiosk</a>
+      </div>
+      <div class="pull-right">
+        <ul class="nav navbar-nav">
+            <li>
+              <div class='navbar-header navbar-brand'>
+              Fund an Application
+              </div>
+            </li>
+        </ul>     
+    </div>
+    </nav>
+</header>
+
+<section>
+
+    <div class="container">
+  
+      <fieldset class="scheduler-border">
+          <legend class="scheduler-border"><span class="glyphicon glyphicon-play"></span>Step 1: Enter Address</legend>
+
+        <div class="container">
+          <div class="form-group">
+            <label for="address">Enter BitShovel Application Address:</label>
+            <input type="text" class="form-control" id="address" size="60"
+                placeholder="example: 1N9zmDbiE2w7QT8oW524eD3BXdcQ8PpFgM"
+                oninput="whenAddressChange(this.value)"
+              >
+            </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="scheduler-border">
+          <legend class="scheduler-border"><span class="glyphicon glyphicon-play"></span>Step 2: Swipe to Fund an App</legend>
+        <div class="row">
+          <div class="col-sm-12">
+            <form class="form-inline">
+              <div class="form-group">
+                <div id='moneybutton'></div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </fieldset>
+
+      <div id="mbRow" class="row collapse">
+        <h4>Payment Information</h4>
+        <div class="col-sm-12 well">
+          <p id="outWell" style="white-space: pre-line;"></p>
+        </div>
+      </div>
+
+    </div>
+</section>
+</div>
+
+<!-- This line can go anywhere -->
+<script src="https://www.moneybutton.com/moneybutton.js"></script>
+
+<script>
+
+$(document).ready(function() {
+    whenAddressChange($("#address").val())
+});
+
+function writeToWell(str) {
+    $('#outWell').text(str)
+}
+
+function showOutput(elementId) {
+    if ($(elementId).hasClass("collapse")) {
+        $(elementId).removeClass("collapse");
+    }
+  }
+
+  function hideRow(elementId) {
+    if (!$(elementId).hasClass("collapse")) {
+        $(elementId).addClass("collapse");
+    }
+  }
+
+function whenAddressChange (address) {
+  if (!address || !address.trim()) {
+    disableButton();
+  } else {
+    enableButton();
+  }
+}
+
+function disableButton (address) {
+    updateButton(0)
+  }
+
+  function enableButton (address) {
+    updateButton(1)
+  }
+
+  function updateButton(faucetPayout) {
+    let payto = $("#address").val()
+    console.log(`updateButton: ${payto}`)
+    const mb = document.getElementById('moneybutton');
+    if (payto) {
+          moneyButton.render(mb, {
+          editable: true,
+          to: payto,
+          currency: "USD",
+          label: "Fund App",
+          clientIdentifier: "bc4299564c2dbfb17d4f879590be1d42",
+          buttonId: "1546923509470",
+          buttonData: "{}",
+          type: "tip",
+          onPayment: paidTheApp,
+          onError: function (arg) { console.log('onError', arg) }
+        })
+    } else {
+      mb.innerHTML = '<div class="alert alert-warning">Enter the address before funding the app</div>';
+    }
+  }
+
+  function paidTheApp (payment) {
+    console.log('Payment to app was completed');
+    showOutput("#mbRow");
+    writeToWell(JSON.stringify(payment))
+  }
+
+</script>
+</body>
+</html>
