@@ -9,6 +9,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
   <link href="css/main.css" media="all" rel="stylesheet" />
+  <script src="https://unpkg.com/datapay"></script>
 </head>
 <body>
 
@@ -44,11 +45,22 @@
                 oninput="whenAddressChange(this.value)"
               >
             </div>
-        </div>
+            <div class="form-group">
+              <label for="cashaddress">Cash Address:</label>
+              <input type="text" readonly class="form-control" id="cashaddress" size="60"
+                >
+              </div>
+              <div class="form-group">
+                <label for="opreturn">OP_RETURN data (Optional):</label>
+                <input type="text" class="form-control" id="opreturn" size="60"
+                oninput="whenOpreturnChange(this.value)"
+                  >
+                </div>
+            </div>
       </fieldset>
 
       <fieldset class="scheduler-border">
-          <legend class="scheduler-border"><span class="glyphicon glyphicon-play"></span>Step 2: Swipe to Fund an App</legend>
+        <legend class="scheduler-border"><span class="glyphicon glyphicon-play"></span>Step 2: Swipe to Fund an App</legend>
         <div class="row">
           <div class="col-sm-12">
             <form class="form-inline">
@@ -101,7 +113,14 @@ function whenAddressChange (address) {
     disableButton();
   } else {
     enableButton();
+    let a = datapay.bsv.Address(address)
+    console.log(a.toCashAddress())
+    $('#cashaddress').val(a.toCashAddress())
   }
+}
+
+function whenOpreturnChange (address) {
+  whenAddressChange($("#address").val())
 }
 
 function disableButton (address) {
@@ -114,7 +133,8 @@ function disableButton (address) {
 
   function updateButton(faucetPayout) {
     let payto = $("#address").val()
-    console.log(`updateButton: ${payto}`)
+    let opreturn = $("#opreturn").val()
+    console.log(`payto: ${payto} return:${opreturn}`)
     const mb = document.getElementById('moneybutton');
     if (payto) {
           moneyButton.render(mb, {
@@ -122,6 +142,7 @@ function disableButton (address) {
           to: payto,
           currency: "USD",
           label: "Fund App",
+          opReturn: opreturn,
           clientIdentifier: "bc4299564c2dbfb17d4f879590be1d42",
           buttonId: "1546923509470",
           buttonData: "{}",
